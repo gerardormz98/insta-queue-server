@@ -13,7 +13,7 @@ namespace LiveWaitlist.Hubs
             _waitlistManager = waitlistManager;
         }
 
-        public async void AddToWaitlist(string name, int partyNumber) 
+        public async Task AddToWaitlist(string name, int partyNumber) 
         {
             string connectionId = Context.ConnectionId;
             var user = new User(name, partyNumber, connectionId);
@@ -23,13 +23,20 @@ namespace LiveWaitlist.Hubs
             await Clients.Caller.SendAsync(HubActions.USER_ADDED, user);
         }
 
-        public async void RemoveFromWaitlist(string userId)
+        public async Task RemoveFromWaitlist(string connectionId)
         {
-            Guid userIdGuid = Guid.Parse(userId);
-            var userRemoved = _waitlistManager.DequeueUser(userIdGuid);
+            var userRemoved = _waitlistManager.DequeueUser(connectionId);
 
-            await Clients.Others.SendAsync(HubActions.PARTY_REMOVED, userRemoved);
-            await Clients.Caller.SendAsync(HubActions.USER_REMOVED);
+            if (userRemoved != null) 
+            {
+                await Clients.Others.SendAsync(HubActions.PARTY_REMOVED, userRemoved);
+                await Clients.Caller.SendAsync(HubActions.USER_REMOVED);
+            }
+        }
+
+        public override Task OnDisconnectedAsync(Exception? exception)
+        {
+            return RemoveFromWaitlist(Context.ConnectionId);
         }
     }
 }

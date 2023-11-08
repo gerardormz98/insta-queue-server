@@ -25,6 +25,6 @@ namespace LiveWaitlist.Data
         /// Removes user from the waitlist.
         /// </summary>
         /// <param name="userId"></param>
-        User? DequeueUser(Guid userId);
+        User? DequeueUser(string connectionId);
     }
 }
