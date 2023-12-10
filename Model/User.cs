@@ -1,18 +1,19 @@
-namespace LiveWaitlist.Model
+namespace LiveWaitlistServer.Model
 {
     public class User
     {
-        public User(string name, int partyNumber, string connectionId)
+        public User(string userId, string name, int partyNumber)
         {
+            UserId = userId;
             Name = name;
-            PartyNumber = partyNumber;
-            ConnectionId = connectionId;
+            PartySize = partyNumber;
         }
 
+        public string UserId { get; set; }
         public string Name { get; set; }
-        public int PartyNumber { get; set; }
+        public int PartySize { get; set; }
         public int CurrentPosition { get; set; }
         public DateTime CheckInTime { get; set; }
-        public string ConnectionId { get; set; }
+        public int NotifyCount { get; set; }
     }
 }
