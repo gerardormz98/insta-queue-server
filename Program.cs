@@ -71,7 +71,7 @@ if (builder.Environment.IsDevelopment())
     {
         options.AddDefaultPolicy(builder =>
         {
-            builder.SetIsOriginAllowed(origin => new string[] { "localhost", "192.168.100.", "127.0.0.1" }.Any(h => new Uri(origin).Host.StartsWith(h)));
+            builder.SetIsOriginAllowed(origin => new string[] { "localhost", "192.168.100.", "127.0.0.1", "instaqueue.netlify.app" }.Any(h => new Uri(origin).Host.StartsWith(h)));
             builder.AllowCredentials();
             builder.AllowAnyHeader();
             builder.AllowAnyMethod();
