@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using LiveWaitlistServer.Configuration;
 using LiveWaitlistServer.Data;
 using LiveWaitlistServer.Hubs;
@@ -18,13 +19,15 @@ namespace LiveWaitlistServer.Controllers
     [Route("api/[controller]")]
     public class WaitlistHostController : ControllerBase
     {
+        private readonly IMapper _mapper;
         private readonly IWaitlistHostRepository _waitlistHostRepository;
         private readonly ILiveWaitlistManager _waitlistManager;
         private readonly IHubContext<LiveWaitlistHub> _liveWaitlistHub;
         private readonly WaitlistConfigOptions _waitlistConfigOptions;
 
-        public WaitlistHostController(IWaitlistHostRepository waitlistHostRepository, ILiveWaitlistManager waitlistManager, IHubContext<LiveWaitlistHub> liveWaitlistHub, IOptions<WaitlistConfigOptions> waitlistConfigOptions)
+        public WaitlistHostController(IMapper mapper, IWaitlistHostRepository waitlistHostRepository, ILiveWaitlistManager waitlistManager, IHubContext<LiveWaitlistHub> liveWaitlistHub, IOptions<WaitlistConfigOptions> waitlistConfigOptions)
         {
+            _mapper = mapper;
             _waitlistHostRepository = waitlistHostRepository;
             _waitlistManager = waitlistManager;
             _liveWaitlistHub = liveWaitlistHub;
@@ -40,7 +43,7 @@ namespace LiveWaitlistServer.Controllers
             if (waitlistHost == null)
                 return NotFound();
 
-            return Ok(waitlistHost);
+            return Ok(_mapper.Map<WaitlistHostResult>(waitlistHost));
         }
 
         [HttpGet]
@@ -68,7 +71,7 @@ namespace LiveWaitlistServer.Controllers
             var newHost = _waitlistHostRepository.Create(hostRequest);
             _waitlistManager.CreateWaitlist(newHost.WaitlistCode);
 
-            return Ok(newHost);
+            return Ok(_mapper.Map<WaitlistHostResult>(newHost));
         }
 
         [Authorize(Roles = "Admin")]
@@ -81,7 +84,7 @@ namespace LiveWaitlistServer.Controllers
             if (updatedHost == null)
                 return BadRequest();
 
-            return Ok(updatedHost);
+            return Ok(_mapper.Map<WaitlistHostResult>(updatedHost));
         }
 
         [Authorize(Roles = "Admin")]
@@ -97,7 +100,7 @@ namespace LiveWaitlistServer.Controllers
             _waitlistManager.DeleteWaitlist(waitlistCode);
             await _liveWaitlistHub.Clients.Group(waitlistCode).SendAsync("OnWaitlistClosed");
 
-            return Ok(deletedHost);
+            return Ok(_mapper.Map<WaitlistHostResult>(deletedHost));
         }
     }
 }

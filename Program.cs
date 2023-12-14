@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text;
 using LiveWaitlistServer.Configuration;
 using LiveWaitlistServer.Data;
@@ -106,6 +107,8 @@ builder.Services.AddSingleton<IWaitlistHostRepository, WaitlistHostRepositoryInM
 builder.Services.AddSingleton<ITokenService, TokenService>();
 builder.Services.AddSingleton<IWaitlistCodeService, WaitlistCodeService>();
 builder.Services.AddSingleton<IEncryptionService, EncryptionService>();
+
+builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 var app = builder.Build();
 
